@@ -1,0 +1,520 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+.app { min-height: 600px; background: var(--color-background-tertiary); }
+.topbar { background: var(--color-background-primary); border-bottom: 0.5px solid var(--color-border-tertiary); padding: 0 1.5rem; height: 52px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+.logo { font-size: 17px; font-weight: 500; color: var(--color-text-primary); display: flex; align-items: center; gap: 8px; }
+.logo-leaf { width: 28px; height: 28px; background: #1D9E75; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; }
+.nav { display: flex; gap: 4px; }
+.nav-btn { background: none; border: none; padding: 6px 12px; border-radius: var(--border-radius-md); font-size: 13px; color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+.nav-btn:hover { background: var(--color-background-secondary); color: var(--color-text-primary); }
+.nav-btn.active { background: #E1F5EE; color: #0F6E56; font-weight: 500; }
+.user-pill { display: flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 20px; background: var(--color-background-secondary); font-size: 13px; color: var(--color-text-secondary); border: 0.5px solid var(--color-border-tertiary); cursor: pointer; }
+.avatar { width: 24px; height: 24px; border-radius: 50%; background: #1D9E75; color: white; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 500; }
+.page { display: none; padding: 1.5rem; }
+.page.active { display: block; }
+.page-title { font-size: 20px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 4px; }
+.page-sub { font-size: 14px; color: var(--color-text-secondary); margin-bottom: 1.5rem; }
+.card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; margin-bottom: 1rem; }
+.grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+.metric { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; }
+.metric-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+.metric-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+.metric-sub { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; padding: 3px 8px; border-radius: 20px; font-weight: 500; }
+.badge-green { background: #E1F5EE; color: #0F6E56; }
+.badge-teal { background: #E1F5EE; color: #0F6E56; }
+.badge-amber { background: #FAEEDA; color: #854F0B; }
+.badge-blue { background: #E6F1FB; color: #185FA5; }
+.badge-purple { background: #EEEDFE; color: #534AB7; }
+.section-label { font-size: 12px; font-weight: 500; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 10px; margin-top: 1.25rem; }
+.upload-zone { border: 1.5px dashed var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 2.5rem; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--color-background-secondary); }
+.upload-zone:hover { border-color: #1D9E75; background: #E1F5EE; }
+.upload-zone.uploading { border-color: #1D9E75; background: #E1F5EE; }
+.upload-icon { font-size: 36px; color: #1D9E75; margin-bottom: 12px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--border-radius-md); font-size: 14px; cursor: pointer; transition: all 0.15s; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); font-family: var(--font-sans); }
+.btn:hover { background: var(--color-background-secondary); }
+.btn:active { transform: scale(0.98); }
+.btn-primary { background: #1D9E75; color: white; border-color: #1D9E75; }
+.btn-primary:hover { background: #0F6E56; border-color: #0F6E56; }
+.waste-result { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); overflow: hidden; }
+.result-header { background: #E1F5EE; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; border-bottom: 0.5px solid #9FE1CB; }
+.result-icon { width: 44px; height: 44px; border-radius: 50%; background: #1D9E75; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; }
+.result-body { padding: 1.25rem; }
+.progress-bar { height: 6px; background: var(--color-background-secondary); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+.progress-fill { height: 100%; background: #1D9E75; border-radius: 3px; transition: width 1s ease; }
+.transform-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; border: 0.5px solid var(--color-border-tertiary); }
+.transform-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); margin-bottom: 6px; }
+.transform-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+.listing-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; display: flex; align-items: flex-start; gap: 12px; }
+.listing-icon { width: 44px; height: 44px; border-radius: var(--border-radius-md); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+.listing-info { flex: 1; }
+.listing-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.listing-meta { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.listing-actions { display: flex; gap: 6px; margin-top: 8px; }
+.filter-bar { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+.filter-chip { padding: 5px 12px; border-radius: 20px; font-size: 12px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); cursor: pointer; transition: all 0.15s; }
+.filter-chip.active { background: #E1F5EE; color: #0F6E56; border-color: #9FE1CB; }
+.filter-chip:hover { background: var(--color-background-secondary); }
+.impact-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); }
+.impact-row:last-child { border-bottom: none; }
+.chat-bubble { padding: 8px 12px; border-radius: 12px; font-size: 13px; line-height: 1.5; max-width: 85%; }
+.chat-ai { background: var(--color-background-secondary); color: var(--color-text-primary); align-self: flex-start; }
+.chat-user { background: #1D9E75; color: white; align-self: flex-end; }
+.chat-row { display: flex; gap: 8px; margin-bottom: 10px; }
+.chat-row.user { flex-direction: row-reverse; }
+.chat-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+.eco-bar { height: 8px; background: var(--color-background-secondary); border-radius: 4px; overflow: hidden; margin-top: 4px; }
+.eco-fill { height: 100%; border-radius: 4px; }
+.points-badge { display: flex; align-items: center; gap: 6px; background: #FAEEDA; color: #854F0B; border-radius: var(--border-radius-md); padding: 8px 14px; font-size: 13px; font-weight: 500; }
+.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #9FE1CB; border-top-color: #1D9E75; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+input[type=text], input[type=number], select, textarea { width: 100%; padding: 8px 12px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 14px; font-family: var(--font-sans); outline: none; }
+input:focus, select:focus, textarea:focus { border-color: #1D9E75; box-shadow: 0 0 0 2px #E1F5EE; }
+label { font-size: 13px; color: var(--color-text-secondary); display: block; margin-bottom: 4px; margin-top: 12px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
+</style>
+
+<h2 class="sr-only">ReSource AI – Waste reuse and exchange platform</h2>
+
+<div class="app">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-leaf"><i class="ti ti-leaf" aria-hidden="true"></i></div>
+      ReSource AI
+    </div>
+    <div class="nav">
+      <button class="nav-btn active" onclick="switchPage('detect')"><i class="ti ti-scan" aria-hidden="true"></i> Detect</button>
+      <button class="nav-btn" onclick="switchPage('marketplace')"><i class="ti ti-building-store" aria-hidden="true"></i> Marketplace</button>
+      <button class="nav-btn" onclick="switchPage('impact')"><i class="ti ti-chart-bar" aria-hidden="true"></i> My Impact</button>
+      <button class="nav-btn" onclick="switchPage('chat')"><i class="ti ti-messages" aria-hidden="true"></i> AI Chat</button>
+    </div>
+    <div class="user-pill">
+      <div class="avatar">AK</div>
+      Arjun K.
+      <span class="badge badge-amber" style="margin-left:4px;"><i class="ti ti-star" aria-hidden="true"></i> 340 pts</span>
+    </div>
+  </div>
+
+  <!-- DETECT PAGE -->
+  <div id="page-detect" class="page active">
+    <div class="page-title">AI Waste Detection</div>
+    <div class="page-sub">Upload a photo of your waste to identify it and get reuse recommendations.</div>
+
+    <div class="grid2">
+      <div>
+        <div class="upload-zone" id="uploadZone" onclick="startDetection()">
+          <div class="upload-icon"><i class="ti ti-photo-up" aria-hidden="true"></i></div>
+          <div style="font-size:15px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;">Drop a photo or tap to upload</div>
+          <div style="font-size:13px;color:var(--color-text-secondary);">Supports JPG, PNG • Vegetables, plastics, paper, glass and more</div>
+          <button class="btn btn-primary" style="margin-top:1rem;" onclick="startDetection()"><i class="ti ti-upload" aria-hidden="true"></i> Upload photo</button>
+        </div>
+
+        <div id="detecting" style="display:none; text-align:center; padding:2rem;">
+          <div class="spinner" style="width:32px;height:32px;border-width:3px;margin:0 auto 12px;"></div>
+          <div style="font-size:14px;color:var(--color-text-secondary);">Analysing with YOLOv8...</div>
+        </div>
+
+        <div id="wasteResult" style="display:none; margin-top:1rem;">
+          <div class="waste-result">
+            <div class="result-header">
+              <div class="result-icon"><i class="ti ti-plant" aria-hidden="true"></i></div>
+              <div>
+                <div style="font-size:16px;font-weight:500;color:#085041;">Onion Peel detected</div>
+                <div style="font-size:13px;color:#0F6E56;">Organic Waste · Biodegradable · Compostable</div>
+                <div class="progress-bar" style="margin-top:6px;width:200px;">
+                  <div class="progress-fill" id="confBar" style="width:0%"></div>
+                </div>
+                <div style="font-size:12px;color:#0F6E56;margin-top:3px;">97% confidence</div>
+              </div>
+            </div>
+            <div class="result-body">
+              <div class="section-label">Recommended actions</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;">
+                <span class="badge badge-green"><i class="ti ti-recycle" aria-hidden="true"></i> Compost</span>
+                <span class="badge badge-blue"><i class="ti ti-droplet" aria-hidden="true"></i> Natural Dye</span>
+                <span class="badge badge-purple"><i class="ti ti-heart" aria-hidden="true"></i> Donate</span>
+                <span class="badge badge-amber"><i class="ti ti-arrows-exchange" aria-hidden="true"></i> Exchange</span>
+              </div>
+
+              <div class="section-label">Transformation ideas</div>
+              <div class="grid2" style="margin-bottom:0;">
+                <div class="transform-card">
+                  <div class="transform-title">🌱 Organic Fertilizer</div>
+                  <div class="transform-meta">
+                    <span class="badge badge-green">Easy</span>
+                    <span class="badge badge-teal">₹0 cost</span>
+                    <span class="badge badge-blue">20 days</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--color-text-secondary);">Layer with dry leaves and soil. Improves soil quality significantly.</div>
+                </div>
+                <div class="transform-card">
+                  <div class="transform-title">🎨 Natural Dye</div>
+                  <div class="transform-meta">
+                    <span class="badge badge-amber">Medium</span>
+                    <span class="badge badge-blue">Water + Container</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--color-text-secondary);">Boil peels to extract golden-yellow dye for textile colouring.</div>
+                </div>
+                <div class="transform-card">
+                  <div class="transform-title">🧴 Bio-Enzyme Cleaner</div>
+                  <div class="transform-meta">
+                    <span class="badge badge-green">Easy</span>
+                    <span class="badge badge-teal">Jaggery + Water</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--color-text-secondary);">Ferment 3 months. Yields a natural all-purpose cleaning liquid.</div>
+                </div>
+                <div class="transform-card">
+                  <div class="transform-title">🏡 Community Compost</div>
+                  <div class="transform-meta">
+                    <span class="badge badge-purple">Donate</span>
+                    <span class="badge badge-blue">Pickup available</span>
+                  </div>
+                  <div style="font-size:12px;color:var(--color-text-secondary);">3 NGO compost projects within 5 km ready to collect.</div>
+                </div>
+              </div>
+
+              <div style="margin-top:1.25rem;display:flex;gap:8px;">
+                <button class="btn btn-primary" onclick="switchPage('marketplace');showNewListing()"><i class="ti ti-plus" aria-hidden="true"></i> Post listing</button>
+                <button class="btn" onclick="switchPage('impact')"><i class="ti ti-chart-bar" aria-hidden="true"></i> See impact</button>
+                <button class="btn" onclick="startDetection()"><i class="ti ti-refresh" aria-hidden="true"></i> Scan again</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-label" style="margin-top:0;">Try with these examples</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="listing-card" style="border:none;text-align:left;cursor:pointer;width:100%;" onclick="selectExample('🧅','Onion Peel','Organic','97%')">
+            <div class="listing-icon" style="background:#E1F5EE;color:#1D9E75;">🧅</div>
+            <div class="listing-info"><div class="listing-title">Onion peel</div><div class="listing-meta">Organic · Compostable · Dye source</div></div>
+            <i class="ti ti-chevron-right" style="color:var(--color-text-secondary);margin-left:auto;align-self:center;" aria-hidden="true"></i>
+          </button>
+          <button class="listing-card" style="border:none;text-align:left;cursor:pointer;width:100%;" onclick="selectExample('🥥','Coconut Shell','Organic','94%')">
+            <div class="listing-icon" style="background:#FAEEDA;color:#854F0B;">🥥</div>
+            <div class="listing-info"><div class="listing-title">Coconut shell</div><div class="listing-meta">Organic · Charcoal · Craft material</div></div>
+            <i class="ti ti-chevron-right" style="color:var(--color-text-secondary);margin-left:auto;align-self:center;" aria-hidden="true"></i>
+          </button>
+          <button class="listing-card" style="border:none;text-align:left;cursor:pointer;width:100%;" onclick="selectExample('📦','Cardboard Box','Paper','99%')">
+            <div class="listing-icon" style="background:#E6F1FB;color:#185FA5;">📦</div>
+            <div class="listing-info"><div class="listing-title">Cardboard box</div><div class="listing-meta">Paper · Recyclable · Reusable</div></div>
+            <i class="ti ti-chevron-right" style="color:var(--color-text-secondary);margin-left:auto;align-self:center;" aria-hidden="true"></i>
+          </button>
+          <button class="listing-card" style="border:none;text-align:left;cursor:pointer;width:100%;" onclick="selectExample('🍌','Banana Peel','Organic','91%')">
+            <div class="listing-icon" style="background:#E1F5EE;color:#1D9E75;">🍌</div>
+            <div class="listing-info"><div class="listing-title">Banana peel</div><div class="listing-meta">Organic · Fertiliser · Skin care</div></div>
+            <i class="ti ti-chevron-right" style="color:var(--color-text-secondary);margin-left:auto;align-self:center;" aria-hidden="true"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MARKETPLACE PAGE -->
+  <div id="page-marketplace" class="page">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:12px;">
+      <div>
+        <div class="page-title">Waste Exchange Marketplace</div>
+        <div class="page-sub" style="margin-bottom:0;">Browse available waste materials near you.</div>
+      </div>
+      <button class="btn btn-primary" id="postBtn" onclick="toggleForm()"><i class="ti ti-plus" aria-hidden="true"></i> Post a listing</button>
+    </div>
+
+    <div id="listingForm" style="display:none;" class="card" style="margin-bottom:1rem;">
+      <div style="font-size:15px;font-weight:500;margin-bottom:1rem;">New waste listing</div>
+      <div class="form-grid">
+        <div><label>Waste type</label><input type="text" placeholder="e.g. Onion Peel" id="wType"></div>
+        <div><label>Quantity (kg)</label><input type="number" placeholder="50" id="wQty"></div>
+        <div><label>Location</label><input type="text" placeholder="Chennai" id="wLoc"></div>
+        <div><label>Availability</label><select><option>Daily</option><option>Weekly</option><option>One-time</option></select></div>
+      </div>
+      <label>Pickup preference</label>
+      <select><option>Self pickup</option><option>I can deliver</option><option>Both</option></select>
+      <div style="display:flex;gap:8px;margin-top:1rem;">
+        <button class="btn btn-primary" onclick="submitListing()"><i class="ti ti-check" aria-hidden="true"></i> Post listing</button>
+        <button class="btn" onclick="toggleForm()">Cancel</button>
+      </div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-chip active" onclick="filterCat(this,'all')">All types</button>
+      <button class="filter-chip" onclick="filterCat(this,'organic')">🌿 Organic</button>
+      <button class="filter-chip" onclick="filterCat(this,'paper')">📄 Paper</button>
+      <button class="filter-chip" onclick="filterCat(this,'plastic')">♻️ Plastic</button>
+      <button class="filter-chip" onclick="filterCat(this,'glass')">🫙 Glass</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px;" id="listings">
+      <div class="listing-card" data-cat="organic">
+        <div class="listing-icon" style="background:#E1F5EE;font-size:24px;">🧅</div>
+        <div class="listing-info">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="listing-title">Fresh Onion Peels</div>
+            <span class="badge badge-green">Organic</span>
+          </div>
+          <div class="listing-meta"><i class="ti ti-map-pin" aria-hidden="true"></i> Erode · 50 kg · Daily availability</div>
+          <div class="listing-meta" style="margin-top:2px;"><i class="ti ti-user" aria-hidden="true"></i> Suresh Farms · ⭐ 4.8</div>
+          <div class="listing-actions">
+            <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="sendPrompt('I want to request the onion peel listing from Suresh Farms in Erode. Help me send a pickup request.')"><i class="ti ti-truck" aria-hidden="true"></i> Request pickup ↗</button>
+            <button class="btn" style="font-size:12px;padding:5px 10px;"><i class="ti ti-message" aria-hidden="true"></i> Message</button>
+            <button class="btn" style="font-size:12px;padding:5px 10px;"><i class="ti ti-heart" aria-hidden="true"></i> Save</button>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:18px;font-weight:500;color:#1D9E75;">50 kg</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);">Free</div>
+        </div>
+      </div>
+
+      <div class="listing-card" data-cat="paper">
+        <div class="listing-icon" style="background:#E6F1FB;font-size:24px;">📦</div>
+        <div class="listing-info">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="listing-title">Cardboard Boxes (Mixed)</div>
+            <span class="badge badge-blue">Paper</span>
+          </div>
+          <div class="listing-meta"><i class="ti ti-map-pin" aria-hidden="true"></i> T. Nagar, Chennai · 120 kg · Weekly</div>
+          <div class="listing-meta" style="margin-top:2px;"><i class="ti ti-user" aria-hidden="true"></i> BigBazar Chennai · ⭐ 4.6</div>
+          <div class="listing-actions">
+            <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="sendPrompt('I want to request the cardboard boxes listing from BigBazar Chennai. Help me send a pickup request.')"><i class="ti ti-truck" aria-hidden="true"></i> Request pickup ↗</button>
+            <button class="btn" style="font-size:12px;padding:5px 10px;"><i class="ti ti-message" aria-hidden="true"></i> Message</button>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:18px;font-weight:500;color:#185FA5;">120 kg</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);">Free</div>
+        </div>
+      </div>
+
+      <div class="listing-card" data-cat="organic">
+        <div class="listing-icon" style="background:#FAEEDA;font-size:24px;">🥥</div>
+        <div class="listing-info">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="listing-title">Coconut Shells</div>
+            <span class="badge badge-amber">Organic</span>
+          </div>
+          <div class="listing-meta"><i class="ti ti-map-pin" aria-hidden="true"></i> Coimbatore · 200 units · Daily</div>
+          <div class="listing-meta" style="margin-top:2px;"><i class="ti ti-user" aria-hidden="true"></i> Krishna Coconut Stall · ⭐ 4.9</div>
+          <div class="listing-actions">
+            <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="sendPrompt('I want to get coconut shells from Krishna Coconut Stall in Coimbatore. What can I make from them and how do I arrange pickup?')"><i class="ti ti-truck" aria-hidden="true"></i> Request pickup ↗</button>
+            <button class="btn" style="font-size:12px;padding:5px 10px;"><i class="ti ti-message" aria-hidden="true"></i> Message</button>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:18px;font-weight:500;color:#854F0B;">200 pcs</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);">Free</div>
+        </div>
+      </div>
+
+      <div class="listing-card" data-cat="plastic">
+        <div class="listing-icon" style="background:#EEEDFE;font-size:24px;">♻️</div>
+        <div class="listing-info">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div class="listing-title">PET Bottles (Clean, sorted)</div>
+            <span class="badge badge-purple">Plastic</span>
+          </div>
+          <div class="listing-meta"><i class="ti ti-map-pin" aria-hidden="true"></i> Anna Nagar, Chennai · 30 kg · One-time</div>
+          <div class="listing-meta" style="margin-top:2px;"><i class="ti ti-user" aria-hidden="true"></i> Meena Household · ⭐ 4.5</div>
+          <div class="listing-actions">
+            <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="sendPrompt('Request PET bottles from Meena Household in Anna Nagar Chennai. What are valid recycling options?')"><i class="ti ti-truck" aria-hidden="true"></i> Request pickup ↗</button>
+            <button class="btn" style="font-size:12px;padding:5px 10px;"><i class="ti ti-message" aria-hidden="true"></i> Message</button>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0;">
+          <div style="font-size:18px;font-weight:500;color:#534AB7;">30 kg</div>
+          <div style="font-size:11px;color:var(--color-text-secondary);">Free</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- IMPACT PAGE -->
+  <div id="page-impact" class="page">
+    <div class="page-title">My Environmental Impact</div>
+    <div class="page-sub">Your contribution to a sustainable planet so far.</div>
+
+    <div class="grid4">
+      <div class="metric"><div class="metric-label">Waste shared</div><div class="metric-val" style="color:#1D9E75;">342 kg</div><div class="metric-sub">↑ 28 kg this month</div></div>
+      <div class="metric"><div class="metric-label">CO₂ saved</div><div class="metric-val" style="color:#185FA5;">218 kg</div><div class="metric-sub">= 11 trees planted</div></div>
+      <div class="metric"><div class="metric-label">Compost created</div><div class="metric-val" style="color:#854F0B;">137 kg</div><div class="metric-sub">Diverted from landfill</div></div>
+      <div class="metric"><div class="metric-label">Eco Points</div><div class="metric-val" style="color:#534AB7;">3,420</div><div class="metric-sub">Silver rank — 1,580 to Gold</div></div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div style="font-size:14px;font-weight:500;margin-bottom:1rem;">Waste breakdown</div>
+        <div>
+          <div class="impact-row">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="width:10px;height:10px;border-radius:50%;background:#1D9E75;display:inline-block;"></span><span style="font-size:13px;">Organic</span></div>
+            <div style="text-align:right;"><div style="font-size:13px;font-weight:500;">187 kg</div><div style="font-size:11px;color:var(--color-text-secondary);">55%</div></div>
+          </div>
+          <div class="eco-bar"><div class="eco-fill" style="width:55%;background:#1D9E75;"></div></div>
+          <div class="impact-row" style="margin-top:10px;">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="width:10px;height:10px;border-radius:50%;background:#185FA5;display:inline-block;"></span><span style="font-size:13px;">Paper / Cardboard</span></div>
+            <div style="text-align:right;"><div style="font-size:13px;font-weight:500;">89 kg</div><div style="font-size:11px;color:var(--color-text-secondary);">26%</div></div>
+          </div>
+          <div class="eco-bar"><div class="eco-fill" style="width:26%;background:#185FA5;"></div></div>
+          <div class="impact-row" style="margin-top:10px;">
+            <div style="display:flex;align-items:center;gap:8px;"><span style="width:10px;height:10px;border-radius:50%;background:#534AB7;display:inline-block;"></span><span style="font-size:13px;">Plastic</span></div>
+            <div style="text-align:right;"><div style="font-size:13px;font-weight:500;">66 kg</div><div style="font-size:11px;color:var(--color-text-secondary);">19%</div></div>
+          </div>
+          <div class="eco-bar"><div class="eco-fill" style="width:19%;background:#534AB7;"></div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:14px;font-weight:500;margin-bottom:1rem;">Badges &amp; rank</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">
+            <span style="font-size:28px;">🥉</span>
+            <div><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">Bronze Champion</div><div style="font-size:12px;color:var(--color-text-secondary);">Earned at 100 points</div></div>
+            <span class="badge badge-green" style="margin-left:auto;">✓ Earned</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);">
+            <span style="font-size:28px;">🥈</span>
+            <div><div style="font-size:14px;font-weight:500;color:var(--color-text-primary);">Silver Recycler</div><div style="font-size:12px;color:var(--color-text-secondary);">Earned at 1,000 points</div></div>
+            <span class="badge badge-green" style="margin-left:auto;">✓ Earned</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:10px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px dashed #9FE1CB;">
+            <span style="font-size:28px;opacity:0.4;">🏆</span>
+            <div><div style="font-size:14px;font-weight:500;color:var(--color-text-secondary);">Green Champion</div><div style="font-size:12px;color:var(--color-text-secondary);">5,000 points · 1,580 to go</div></div>
+            <div class="eco-bar" style="flex:1;margin:0;"><div class="eco-fill" style="width:68%;background:#1D9E75;"></div></div>
+          </div>
+        </div>
+        <div style="margin-top:1rem;">
+          <div class="points-badge"><i class="ti ti-star" aria-hidden="true"></i> 3,420 Eco Points · Earn 10 pts per kg reused</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHAT PAGE -->
+  <div id="page-chat" class="page">
+    <div class="page-title">AI Waste Advisor</div>
+    <div class="page-sub">Ask about any waste material — get transformation ideas, recycling options, and impact estimates.</div>
+    <div class="card" style="margin-bottom:0;">
+      <div id="chatBox" style="display:flex;flex-direction:column;gap:2px;min-height:260px;margin-bottom:1rem;">
+        <div class="chat-row">
+          <div class="chat-avatar" style="background:#E1F5EE;color:#1D9E75;"><i class="ti ti-leaf" aria-hidden="true"></i></div>
+          <div class="chat-bubble chat-ai">Hi! I'm your ReSource AI advisor. Ask me about any waste — I'll suggest ways to reuse, recycle, or exchange it. Try: <em>"What can I do with coconut shells?"</em></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+        <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="askQ('What can I do with coconut shells?')">Coconut shells ↗</button>
+        <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="askQ('How do I make compost from kitchen waste?')">Kitchen compost ↗</button>
+        <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="askQ('What plastics can be recycled in Chennai?')">Chennai plastics ↗</button>
+        <button class="btn" style="font-size:12px;padding:5px 10px;" onclick="askQ('How much CO2 does 10 kg of banana peel save if composted?')">Banana peel impact ↗</button>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="chatInput" placeholder="Ask about any waste material..." onkeydown="if(event.key==='Enter')sendChat()" style="flex:1;">
+        <button class="btn btn-primary" onclick="sendChat()"><i class="ti ti-send" aria-hidden="true"></i> Ask</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  const map = {detect:0,marketplace:1,impact:2,chat:3};
+  document.querySelectorAll('.nav-btn')[map[id]].classList.add('active');
+}
+
+function startDetection() {
+  document.getElementById('uploadZone').style.display = 'none';
+  document.getElementById('detecting').style.display = 'block';
+  document.getElementById('wasteResult').style.display = 'none';
+  setTimeout(() => {
+    document.getElementById('detecting').style.display = 'none';
+    document.getElementById('wasteResult').style.display = 'block';
+    setTimeout(() => { document.getElementById('confBar').style.width = '97%'; }, 100);
+  }, 1800);
+}
+
+function selectExample(icon, name, cat, conf) {
+  document.getElementById('uploadZone').style.display = 'none';
+  document.getElementById('detecting').style.display = 'block';
+  document.getElementById('wasteResult').style.display = 'none';
+  setTimeout(() => {
+    document.getElementById('detecting').style.display = 'none';
+    document.getElementById('wasteResult').style.display = 'block';
+    document.getElementById('confBar').style.width = '0%';
+    setTimeout(() => { document.getElementById('confBar').style.width = conf.replace('%','') + '%'; }, 100);
+  }, 1800);
+}
+
+let formOpen = false;
+function toggleForm() {
+  formOpen = !formOpen;
+  document.getElementById('listingForm').style.display = formOpen ? 'block' : 'none';
+}
+function showNewListing() { formOpen = false; toggleForm(); }
+
+function submitListing() {
+  const t = document.getElementById('wType').value || 'Onion Peel';
+  const q = document.getElementById('wQty').value || '20';
+  const l = document.getElementById('wLoc').value || 'Chennai';
+  const newCard = document.createElement('div');
+  newCard.className = 'listing-card';
+  newCard.setAttribute('data-cat','organic');
+  newCard.innerHTML = `<div class="listing-icon" style="background:#E1F5EE;font-size:24px;">🌿</div>
+    <div class="listing-info">
+      <div style="display:flex;align-items:center;gap:8px;"><div class="listing-title">${t}</div><span class="badge badge-green">New</span></div>
+      <div class="listing-meta"><i class="ti ti-map-pin" aria-hidden="true"></i> ${l} · ${q} kg · Daily</div>
+      <div class="listing-meta" style="margin-top:2px;"><i class="ti ti-user" aria-hidden="true"></i> Arjun K. (you) · ⭐ New</div>
+    </div>
+    <div style="text-align:right;flex-shrink:0;"><div style="font-size:18px;font-weight:500;color:#1D9E75;">${q} kg</div><div style="font-size:11px;color:var(--color-text-secondary);">Free</div></div>`;
+  document.getElementById('listings').prepend(newCard);
+  toggleForm();
+}
+
+function filterCat(el, cat) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('#listings .listing-card').forEach(c => {
+    c.style.display = (cat === 'all' || c.getAttribute('data-cat') === cat) ? 'flex' : 'none';
+  });
+}
+
+const aiReplies = {
+  'coconut': "Coconut shells are incredibly versatile! You can:\n\n🔥 <b>Charcoal</b> – burn in a low-oxygen kiln to make cooking/filter charcoal\n🌱 <b>Planters</b> – halved shells make biodegradable pots for seedlings\n✏️ <b>Crafts</b> – used in jewellery, bowls, and décor\n🌊 <b>Activated carbon</b> – used in water filters\n\nI can match you with 2 craft NGOs and 1 charcoal unit in Coimbatore nearby!",
+  'compost': "Kitchen compost is simple in 3 steps:\n\n1️⃣ <b>Collect</b> – vegetable peels, fruit scraps, eggshells, coffee grounds in a bin\n2️⃣ <b>Layer</b> – mix with dry leaves or shredded paper (1:1 ratio)\n3️⃣ <b>Wait</b> – stir every 3 days; ready in 4–6 weeks\n\nAvoid meat, dairy, and oily food. 5 kg of kitchen waste produces ~2 kg of compost and saves about 3.2 kg CO₂!",
+  'plastic': "In Chennai, recyclable plastics under BBMP:\n\n✅ <b>PET (1)</b> – bottles, jars → dropped at Blue Bins\n✅ <b>HDPE (2)</b> – detergent bottles → Dry waste\n✅ <b>PP (5)</b> – containers → accepted at Kabadiwala\n❌ <b>PVC (3), PS (6)</b> – NOT recyclable here\n\nI found 4 registered plastic collectors within 8 km of Anna Nagar. Want me to connect you?",
+  'banana': "Composting 10 kg of banana peels:\n\n🌍 <b>CO₂ saved</b>: ~6.4 kg (vs landfill methane)\n🌱 <b>Compost yield</b>: ~4 kg\n💧 <b>Water saved</b>: ~120 litres (vs crop irrigation equivalent)\n🏆 <b>Eco Points earned</b>: 100 pts\n\nBanana peels are also rich in potassium — excellent for flowering plants and tomatoes!"
+};
+
+function addBubble(text, type) {
+  const box = document.getElementById('chatBox');
+  const row = document.createElement('div');
+  row.className = 'chat-row' + (type === 'user' ? ' user' : '');
+  const av = type === 'ai'
+    ? `<div class="chat-avatar" style="background:#E1F5EE;color:#1D9E75;"><i class="ti ti-leaf" aria-hidden="true"></i></div>`
+    : `<div class="chat-avatar" style="background:#1D9E75;color:white;font-size:11px;font-weight:500;">AK</div>`;
+  row.innerHTML = av + `<div class="chat-bubble chat-${type}" style="white-space:pre-line;">${text}</div>`;
+  box.appendChild(row);
+  box.scrollTop = box.scrollHeight;
+}
+
+function sendChat() {
+  const inp = document.getElementById('chatInput');
+  const q = inp.value.trim();
+  if (!q) return;
+  inp.value = '';
+  addBubble(q, 'user');
+  const key = Object.keys(aiReplies).find(k => q.toLowerCase().includes(k));
+  const reply = key ? aiReplies[key] : "Great question! Analysing that waste type...\n\nFor best results, try uploading a photo using the Detect tab — I can give much more specific transformation ideas and connect you with local buyers once I see the material.";
+  setTimeout(() => addBubble(reply, 'ai'), 900);
+}
+
+function askQ(q) {
+  switchPage('chat');
+  document.getElementById('chatInput').value = q;
+  sendChat();
+}
+</script>
